@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>有機合成実験スキーム入力（テスト版）</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#202124;background:#f7f8fa;line-height:1.5}
+*{box-sizing:border-box}body{margin:0}main{max-width:900px;margin:0 auto;padding:22px 14px 56px}
+h1{font-size:1.55rem;margin:0 0 6px}h2{font-size:1.15rem;margin:0 0 14px}h3{font-size:1rem;margin:0}
+p{margin:5px 0;color:#5f6368}.muted{font-size:.88rem;color:#5f6368}
+.card{background:white;border:1px solid #dadce0;border-radius:14px;padding:18px;margin:14px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;font-size:.9rem;font-weight:600;margin-bottom:5px}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid #c7cbd1;border-radius:8px;background:white;font:inherit;color:inherit}
+textarea{min-height:76px;resize:vertical}.field{margin:12px 0}
+button{font:inherit;cursor:pointer;border:1px solid #c7cbd1;border-radius:9px;padding:9px 13px;background:white;color:#202124}
+button.primary{background:#175cd3;border-color:#175cd3;color:white}button.danger{color:#b42318}
+button:disabled{opacity:.35;cursor:default}.row{display:flex;align-items:center;gap:8px}.row .grow{flex:1}
+.step-head{display:flex;align-items:center;gap:9px;margin-bottom:12px}.num{background:#edf2fa;border-radius:8px;padding:7px 10px;font-weight:700}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.flowbox{border:1px solid #d0d5dd;border-radius:10px;padding:13px;width:100%;text-align:center;background:#fff}
+.flowop{border:1px solid #c7d7f4;background:#f5f8ff;border-radius:10px;padding:13px;width:100%}
+.arrow{text-align:center;color:#667085;font-size:1.4rem;line-height:1.5}
+
+.target-chip{display:inline-flex;align-items:center;gap:8px;background:#f2f4f7;border:1px solid #e4e7ec;border-radius:8px;padding:8px 10px;margin:3px 0 12px;flex-wrap:wrap}
+.parameter-panel{border:1px solid #d0d5dd;background:#fbfcfe;border-radius:10px;padding:12px;margin:8px 0 12px}
+.parameter-heading{font-weight:700;margin-bottom:3px}
+.parameter-panel .field:last-child{margin-bottom:2px}
+
+table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{border-bottom:1px solid #e4e7ec;padding:9px;text-align:left;vertical-align:top}th{background:#f8fafc}
+.tablewrap{overflow-x:auto}.hidden{display:none}.notice{background:#fff7e6;border:1px solid #f3d18b;padding:12px;border-radius:10px;font-size:.9rem}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f8fafc;padding:12px;border-radius:8px;max-height:360px;overflow:auto}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:14px}h1{font-size:1.3rem}.step-head{flex-wrap:wrap}}
+.compound-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;border:1px solid var(--line,#ddd);border-radius:10px;padding:10px;margin:8px 0}.used-compound-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;gap:10px;align-items:end;border:1px solid #e4e7ec;border-radius:10px;padding:10px;margin:8px 0}.used-compound-row .field{margin:0}@media(max-width:650px){.compound-row{grid-template-columns:1fr;gap:0}.used-compound-row{grid-template-columns:1fr;gap:8px}.used-compound-row button{justify-self:start}}\n</style>
+</head>
+<body>
+<main>
+  <header class="card">
+    <h1>有機合成実験スキーム入力</h1>
+    <p>操作性評価用プロトタイプ v0.1</p>
+    <div class="notice" style="margin-top:14px">テスト版です。入力内容はこのブラウザ内で一時的に表示されるだけで、サーバーや共有データベースには保存されません。実在の機密実験データは入力しないでください。</div>
+  </header>
+
+  <section class="card">
+    <h2>01　実験情報</h2>
+    <div class="field"><label for="referenceData">参照データ</label>
+      <select id="referenceData">
+        <option value="-">-</option>
+        <option value="鈴木宮浦・ブロモフェノール">鈴木宮浦・ブロモフェノール</option>
+        <option value="鈴木宮浦・ブロモアニリン">鈴木宮浦・ブロモアニリン</option>
+        <option value="鈴木宮浦・クロロベンゼン">鈴木宮浦・クロロベンゼン</option>
+      </select>
+      <p class="muted">選択した参照データのひな形を実験情報に反映します。実験名は上書きしません。</p>
+    </div>
+    <div class="field"><label for="expName">実験名</label><input id="expName" placeholder="例：合成実験 001"></div>
+    <div class="field"><label for="researchBackground">研究背景</label><textarea id="researchBackground" placeholder="研究目的、背景、仮説など"></textarea></div>
+    <div class="grid">
+      <div class="field"><label>出発化合物</label><div id="startCompoundRows"></div><button type="button" id="addStartIdentifier">＋ 出発化合物を追加</button></div>
+      <div class="field"><label>目的化合物</label><div id="targetCompoundRows"></div><button type="button" id="addTargetIdentifier">＋ 目的化合物を追加</button></div>
+    </div>
+    <div class="field">
+      <label>使用化合物</label>
+      <p class="muted">試薬・溶媒など、操作工程で選択する化合物を登録してください。ここに登録した化合物が、操作工程の「物質名」プルダウン候補になります。</p>
+      <div id="usedCompoundRows"></div>
+      <button type="button" id="addUsedCompound">＋ 使用化合物を追加</button>
+    </div>
+    <div class="field"><label for="schemeImage">スキーム画像</label><input id="schemeImage" type="file" accept="image/*"><div id="schemeImagePreview" class="muted"></div></div>
+  </section>
+
+  <section>
+    <div class="row" style="margin:18px 2px 8px"><div class="grow"><h2>02　操作工程</h2><p class="muted">大分類 → 中分類 → 小分類を順に選択すると、操作に合わせた詳細・パラメータ欄が表示されます。工程は追加・削除・並べ替えできます。</p></div><strong id="stepCount">1工程</strong></div>
+    <div id="steps"></div>
+    <button class="primary" id="addStep">＋ 工程を追加</button>
+  </section>
+
+  <section class="card">
+    <h2>03　結果分析</h2>
+    <p class="muted">失敗形態と、失敗の判断根拠となる証拠データを登録します。添付ファイル本体はこの試作版のJSONには含まれず、ファイル名などの情報が出力されます。</p>
+    <div class="field"><label for="failureType">失敗形態</label>
+      <select id="failureType">
+        <option value="">選択してください</option>
+        <option>未反応</option><option>部分反応</option><option>低収率</option><option>分解</option>
+        <option>副反応</option><option>目的物未検出</option><option>精製失敗</option><option>回収失敗</option><option>その他</option>
+      </select>
+    </div>
+    <div id="evidenceList"></div>
+    <button class="primary" type="button" id="addEvidence">＋ 証拠データを追加</button>
+  </section>
+
+  <section class="card">
+    <h2>04　スキームプレビュー</h2>
+    <div class="field"><label for="viewMode">表示形式</label><select id="viewMode"><option value="both">フローと一覧表</option><option value="flow">フローのみ</option><option value="table">一覧表のみ</option></select></div>
+    <div id="flowView"></div>
+    <div id="tableView" class="tablewrap" style="margin-top:14px"></div>
+  </section>
+
+  <section class="card">
+    <h2>05　データ出力</h2>
+    <p class="muted">入力をJSON形式でコピー・保存できます。これは共有データベースへの保存ではありません。</p>
+    <div class="actions" style="margin-top:12px">
+      <button class="primary" id="copyJson">JSONをコピー</button>
+      <button id="downloadJson">JSONファイルを保存</button>
+      <button id="showJson">JSONを表示</button>
+    </div>
+    <pre id="jsonOutput" class="hidden"></pre>
+    <p id="copyStatus" class="muted" aria-live="polite"></p>
+  </section>
+  <footer class="muted">テスト版：入力は自動送信されません。ページを再読み込みすると入力内容は消えます。</footer>
+</main>
+<script>
+const operationDefinitions = [{"excelCategory":"物質の添加・移送","name":"試薬・溶媒の添加","target":"試薬／溶媒","fields":[{"label":"物質名","type":"記述","options":[]},{"label":"添加量","type":"数値","options":[]},{"label":"単位","type":"プルダウン","options":["mg","g","μL","mL","mmol","当量"]},{"label":"添加方法","type":"プルダウン","options":["一括添加","滴下","分割添加"]},{"label":"添加時の温度（任意）","type":"記述","options":[]}],"bigCategory":"物質の添加・移送","middleCategory":"添加・移送"},{"excelCategory":"反応操作","name":"撹拌・反応","target":"反応混合物","fields":[{"label":"反応温度","type":"記述","options":[]},{"label":"反応時間","type":"数値","options":[]},{"label":"時間単位","type":"プルダウン","options":["分","時間","日"]},{"label":"反応溶媒","type":"記述","options":[]},{"label":"雰囲気","type":"プルダウン","options":["大気","窒素","アルゴン","その他"]},{"label":"撹拌方法（任意）","type":"プルダウン","options":["磁気撹拌","機械撹拌","その他"]},{"label":"反応終了の判断方法","type":"プルダウン","options":["TLC","LC-MS","GC","NMR","反応時間","その他"]}],"bigCategory":"反応操作","middleCategory":"反応進行・時間管理"},{"excelCategory":"反応操作","name":"加熱・冷却","target":"反応混合物","fields":[{"label":"設定温度／冷却条件","type":"記述","options":[]},{"label":"保持時間（任意）","type":"数値","options":[]},{"label":"時間単位","type":"プルダウン","options":["分","時間","日"]},{"label":"加熱・冷却方法（任意）","type":"プルダウン","options":["オイルバス","ヒートブロック","氷浴","冷却浴","室温","その他"]}],"bigCategory":"反応操作","middleCategory":"温度条件の制御"},{"excelCategory":"後処理","name":"反応停止（クエンチ）","target":"反応混合物","fields":[{"label":"停止剤・クエンチ剤","type":"記述","options":[]},{"label":"添加量（任意）","type":"数値","options":[]},{"label":"単位（任意）","type":"プルダウン","options":["mL","g","mmol","当量"]},{"label":"添加順序・方法","type":"記述","options":[]},{"label":"添加時の温度（任意）","type":"記述","options":[]}],"bigCategory":"後処理","middleCategory":"反応停止"},{"excelCategory":"後処理","name":"分液・抽出","target":"反応混合物","fields":[{"label":"抽出溶媒","type":"記述","options":[]},{"label":"抽出回数","type":"数値","options":[]},{"label":"有機層の行先・処理","type":"記述","options":[]},{"label":"水層の行先・処理","type":"記述","options":[]},{"label":"洗浄順序","type":"自由記述","options":[]},{"label":"各洗浄液","type":"自由記述","options":[]},{"label":"各洗浄の回数","type":"数値","options":[]},{"label":"層の判定方法（任意）","type":"記述","options":[]},{"label":"乳化・相分離の問題（任意）","type":"記述","options":[]}],"bigCategory":"後処理","middleCategory":"液液分離・洗浄"},{"excelCategory":"後処理","name":"乾燥剤処理","target":"有機層","fields":[{"label":"乾燥剤","type":"プルダウン","options":["硫酸ナトリウム","硫酸マグネシウム","その他"]},{"label":"乾燥剤量（任意）","type":"数値","options":[]},{"label":"接触時間（任意）","type":"数値","options":[]},{"label":"時間単位（任意）","type":"プルダウン","options":["分","時間"]},{"label":"乾燥後の処理","type":"プルダウン","options":["ろ過","デカンテーション","その他"]}],"bigCategory":"後処理","middleCategory":"有機層の乾燥"},{"excelCategory":"後処理","name":"ろ過","target":"反応混合物／懸濁液","fields":[{"label":"ろ過方式","type":"プルダウン","options":["重力ろ過","吸引ろ過","その他"]},{"label":"ろ材・ろ過助剤（任意）","type":"記述","options":[]},{"label":"ろ液／残渣の回収先","type":"記述","options":[]},{"label":"洗浄溶媒（任意）","type":"記述","options":[]},{"label":"洗浄回数（任意）","type":"数値","options":[]}],"bigCategory":"後処理","middleCategory":"固液分離"},{"excelCategory":"濃縮・溶媒除去","name":"濃縮","target":"有機層／溶液","fields":[{"label":"濃縮装置","type":"プルダウン","options":["ロータリーエバポレーター","減圧濃縮装置","その他"]},{"label":"浴温（任意）","type":"記述","options":[]},{"label":"圧力条件（任意）","type":"記述","options":[]},{"label":"濃縮終点・残溶媒の扱い","type":"記述","options":[]}],"bigCategory":"濃縮・溶媒除去","middleCategory":"溶媒除去・濃縮"},{"excelCategory":"精製","name":"カラムクロマトグラフィー","target":"粗生成物","fields":[{"label":"固定相","type":"プルダウン","options":["シリカゲル","アルミナ","逆相担体","その他"]},{"label":"カラム形式（任意）","type":"プルダウン","options":["通常カラム","フラッシュカラム","その他"]},{"label":"移動相・初期展開溶媒","type":"記述","options":[]},{"label":"溶媒組成の変更","type":"プルダウン","options":["変更なし","段階的に極性を上げる","連続的に極性を上げる","その他"]},{"label":"溶媒組成の変更履歴","type":"自由記述","options":[]},{"label":"変更理由","type":"プルダウン","options":["TLCのRf・分離状況","溶出の遅さ","分離改善","その他"]},{"label":"フラクション管理方法","type":"プルダウン","options":["番号","容量・時間","TLC確認","その他"]},{"label":"目的物を含む画分の特定方法","type":"プルダウン","options":["TLC","LC-MS","GC","その他"]}],"bigCategory":"精製","middleCategory":"クロマトグラフィー"},{"excelCategory":"精製","name":"再結晶","target":"粗生成物／固体","fields":[{"label":"再結晶溶媒・混合溶媒","type":"記述","options":[]},{"label":"溶解時の温度条件","type":"記述","options":[]},{"label":"冷却条件・冷却速度（任意）","type":"記述","options":[]},{"label":"結晶回収方法","type":"プルダウン","options":["吸引ろ過","重力ろ過","その他"]},{"label":"結晶洗浄溶媒（任意）","type":"記述","options":[]}],"bigCategory":"精製","middleCategory":"結晶化"},{"excelCategory":"その他","name":"その他の操作","target":"その他","fields":[{"label":"操作内容","type":"自由記述","options":[]},{"label":"補足（任意）","type":"自由記述","options":[]}],"bigCategory":"その他","middleCategory":"個別・例外操作"}];
+const hierarchy = {"物質の添加・移送":{"添加・移送":["試薬・溶媒の添加"]},"反応操作":{"反応進行・時間管理":["撹拌・反応"],"温度条件の制御":["加熱・冷却"]},"後処理":{"反応停止":["反応停止（クエンチ）"],"液液分離・洗浄":["分液・抽出"],"有機層の乾燥":["乾燥剤処理"],"固液分離":["ろ過"]},"濃縮・溶媒除去":{"溶媒除去・濃縮":["濃縮"]},"精製":{"クロマトグラフィー":["カラムクロマトグラフィー"],"結晶化":["再結晶"]},"その他":{"個別・例外操作":["その他の操作"]}};
+const definitionByName = Object.fromEntries(operationDefinitions.map(op => [op.name, op]));
+const bigCategories = Object.keys(hierarchy);
+
+let nextId = 2;
+let steps = [newStep(1)];
+
+function firstMiddle(big) {
+  return Object.keys(hierarchy[big] || {})[0] || "";
+}
+function firstOperation(big, middle) {
+  return (hierarchy[big] && hierarchy[big][middle] && hierarchy[big][middle][0]) || "";
+}
+function makeStep(id, big, middle, name) {
+  const b = big || bigCategories[0];
+  const m = middle || firstMiddle(b);
+  const n = name || firstOperation(b, m);
+  const def = definitionByName[n];
+  return {id, bigCategory:b, middleCategory:m, operationName:n, target:def?.target || "", parameters:{}, chemicalSelections:{}, note:""};
+}
+function newStep(id) { return makeStep(id); }
+const $=id=>document.getElementById(id);
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function options(arr,current){return arr.map(v=>`<option value="${esc(v)}" ${v===current?"selected":""}>${esc(v)}</option>`).join("")}
+function selectedOptions(arr,current){
+  return `<option value="">選択してください</option>` + arr.map(v=>`<option value="${esc(v)}" ${v===current?"selected":""}>${esc(v)}</option>`).join("");
+}
+function renderParameter(f,s){
+  const value = s.parameters[f.label] ?? "";
+  const key = `data-param="${esc(f.label)}"`;
+  const longTextLabels = new Set([
+    "添加順序・方法","有機層の行先・処理","水層の行先・処理","洗浄順序","各洗浄液",
+    "層の判定方法（任意）","乳化・相分離の問題（任意）","ろ液／残渣の回収先",
+    "濃縮終点・残溶媒の扱い","溶媒組成の変更履歴","変更理由","操作内容","補足（任意）"
+  ]);
+  let control = "";
+  if (f.label === "物質名") {
+    const compounds = activeUsedCompounds();
+    const selectedId = s.chemicalSelections?.[f.label] ?? "";
+    const placeholder = compounds.length ? "選択してください" : "使用化合物を先に登録してください";
+    const chemicalOptions = `<option value="">${placeholder}</option>` + compounds.map(c => `<option value="${esc(c.id)}" ${String(c.id)===String(selectedId)?"selected":""}>${esc(c.name)}${c.cas?`（CAS: ${esc(c.cas)}）`:""}</option>`).join("");
+    control = `<select data-chemical-param="${esc(f.label)}">${chemicalOptions}</select><p class="muted">実験情報の「使用化合物」に登録した候補から選択します。</p>`;
+  } else if (f.type === "プルダウン") {
+    control = `<select ${key}>${selectedOptions(f.options || [],value)}</select>`;
+  } else if (f.type === "数値") {
+    control = `<input ${key} type="number" step="any" value="${esc(value)}" placeholder="数値">`;
+  } else if (f.type === "自由記述" || longTextLabels.has(f.label)) {
+    control = `<textarea ${key} placeholder="必要な場合のみ記入">${esc(value)}</textarea>`;
+  } else {
+    control = `<input ${key} type="text" value="${esc(value)}" placeholder="必要な場合のみ記入">`;
+  }
+  return `<div class="field"><label>${esc(f.label)}</label>${control}</div>`;
+}
+function renderSteps(){
+  $("stepCount").textContent=steps.length+"工程";
+  $("steps").innerHTML=steps.map((s,i)=>{
+    const bigOptions = options(bigCategories,s.bigCategory);
+    const middleCategories = Object.keys(hierarchy[s.bigCategory] || {});
+    const middleOptions = options(middleCategories,s.middleCategory);
+    const smallOptions = options((hierarchy[s.bigCategory] || {})[s.middleCategory] || [],s.operationName);
+    const def = definitionByName[s.operationName] || definitionByName[firstOperation(s.bigCategory,s.middleCategory)];
+    const paramsHtml = (def?.fields || []).map(f=>renderParameter(f,s)).join("");
+    return `<article class="card" data-step="${s.id}">
+      <div class="step-head"><span class="num">${String(i+1).padStart(2,"0")}</span><div class="grow"><h3>${esc(s.operationName)}</h3><p class="muted">${esc(s.bigCategory)} › ${esc(s.middleCategory)}</p></div>
+      <button type="button" data-move="-1" ${i===0?"disabled":""} aria-label="工程を上へ">↑</button><button type="button" data-move="1" ${i===steps.length-1?"disabled":""} aria-label="工程を下へ">↓</button><button type="button" class="danger" data-remove>削除</button></div>
+      <div class="grid">
+        <div class="field"><label>大分類 *</label><select data-key="bigCategory">${bigOptions}</select></div>
+        <div class="field"><label>中分類 *</label><select data-key="middleCategory">${middleOptions}</select></div>
+      </div>
+      <div class="field"><label>小分類・具体的な操作 *</label><select data-key="operationName">${smallOptions}</select></div>
+      <div class="target-chip"><span class="muted">操作対象の目安</span> <strong>${esc(def?.target || s.target || "その他")}</strong></div>
+      <div class="parameter-panel">
+        <div class="parameter-heading">詳細・パラメータ</div>
+        <p class="muted">該当する項目だけ記入してください。プルダウン項目は候補から選択できます。</p>
+        ${paramsHtml}
+      </div>
+      <div class="field"><label>備考・例外（任意）</label><textarea data-key="note" placeholder="標準の選択肢にない条件、異常、特記事項など">${esc(s.note)}</textarea></div>
+    </article>`;
+  }).join("");
+  $("steps").querySelectorAll("article").forEach(article=>{
+    const id=Number(article.dataset.step);
+    article.querySelectorAll("[data-key]").forEach(el=>el.addEventListener("change",()=>{
+      const s=steps.find(x=>x.id===id);
+      if(!s) return;
+      const key=el.dataset.key;
+      if(key==="bigCategory"){
+        s.bigCategory=el.value;
+        s.middleCategory=firstMiddle(s.bigCategory);
+        s.operationName=firstOperation(s.bigCategory,s.middleCategory);
+        s.target=definitionByName[s.operationName]?.target || "";
+        s.parameters={};
+        s.chemicalSelections={};
+        renderSteps();renderPreview();
+      } else if(key==="middleCategory"){
+        s.middleCategory=el.value;
+        s.operationName=firstOperation(s.bigCategory,s.middleCategory);
+        s.target=definitionByName[s.operationName]?.target || "";
+        s.parameters={};
+        s.chemicalSelections={};
+        renderSteps();renderPreview();
+      } else if(key==="operationName"){
+        s.operationName=el.value;
+        s.target=definitionByName[s.operationName]?.target || "";
+        s.parameters={};
+        s.chemicalSelections={};
+        renderSteps();renderPreview();
+      } else {
+        s[key]=el.value;renderPreview();
+      }
+    }));
+    article.querySelectorAll("[data-param]").forEach(el=>{
+      const update=()=>{
+        const s=steps.find(x=>x.id===id);
+        if(!s) return;
+        s.parameters[el.dataset.param]=el.value;
+        renderPreview();
+      };
+      el.addEventListener("input",update);
+      el.addEventListener("change",update);
+    });
+    article.querySelectorAll("[data-chemical-param]").forEach(el=>el.addEventListener("change",()=>{
+      const s=steps.find(x=>x.id===id);
+      if(!s) return;
+      const label=el.dataset.chemicalParam;
+      const compound=activeUsedCompounds().find(c=>String(c.id)===String(el.value));
+      s.chemicalSelections=s.chemicalSelections||{};
+      if(compound){
+        s.chemicalSelections[label]=compound.id;
+        s.parameters[label]=compound.name;
+        if(compound.cas) s.parameters[`${label}（CAS番号）`]=compound.cas;
+        else delete s.parameters[`${label}（CAS番号）`];
+      } else {
+        delete s.chemicalSelections[label];
+        delete s.parameters[label];
+        delete s.parameters[`${label}（CAS番号）`];
+      }
+      renderPreview();
+    }));
+    article.querySelector("[data-remove]").addEventListener("click",()=>{
+      steps=steps.filter(x=>x.id!==id);
+      if(!steps.length)steps=[newStep(nextId++)];
+      renderSteps();renderPreview();
+    });
+    article.querySelectorAll("[data-move]").forEach(btn=>btn.addEventListener("click",()=>{
+      const idx=steps.findIndex(x=>x.id===id),dest=idx+Number(btn.dataset.move);
+      if(dest<0||dest>=steps.length)return;
+      [steps[idx],steps[dest]]=[steps[dest],steps[idx]];
+      renderSteps();renderPreview();
+    }));
+  });
+}
+let usedCompoundRowsData = [{id:1,name:"",cas:""}];
+let nextUsedCompoundId = 2;
+function activeUsedCompounds(){
+  return usedCompoundRowsData
+    .map(c=>({id:c.id,name:String(c.name||"").trim(),cas:String(c.cas||"").trim()}))
+    .filter(c=>c.name);
+}
+function updateSelectedChemicalParameters(){
+  const compounds=activeUsedCompounds();
+  steps.forEach(s=>{
+    s.chemicalSelections=s.chemicalSelections||{};
+    Object.entries(s.chemicalSelections).forEach(([label,id])=>{
+      const c=compounds.find(x=>String(x.id)===String(id));
+      if(!c){
+        delete s.chemicalSelections[label];
+        delete s.parameters[label];
+        delete s.parameters[`${label}（CAS番号）`];
+      } else {
+        s.parameters[label]=c.name;
+        if(c.cas) s.parameters[`${label}（CAS番号）`]=c.cas;
+        else delete s.parameters[`${label}（CAS番号）`];
+      }
+    });
+  });
+}
+function refreshChemicalOptions(){
+  updateSelectedChemicalParameters();
+  const compounds=activeUsedCompounds();
+  document.querySelectorAll("[data-step]").forEach(article=>{
+    const id=Number(article.dataset.step), s=steps.find(x=>x.id===id);
+    if(!s)return;
+    article.querySelectorAll("[data-chemical-param]").forEach(select=>{
+      const label=select.dataset.chemicalParam;
+      const selectedId=s.chemicalSelections?.[label] ?? "";
+      const placeholder=compounds.length?"選択してください":"使用化合物を先に登録してください";
+      select.innerHTML=`<option value="">${placeholder}</option>`+compounds.map(c=>`<option value="${esc(c.id)}" ${String(c.id)===String(selectedId)?"selected":""}>${esc(c.name)}${c.cas?`（CAS: ${esc(c.cas)}）`:""}</option>`).join("");
+      select.value=String(selectedId);
+    });
+  });
+}
+function renderUsedCompoundRows(){
+  const host=$("usedCompoundRows");
+  host.innerHTML=usedCompoundRowsData.map((c,i)=>`<div class="used-compound-row" data-used-compound-row="${c.id}">
+    <div class="field"><label>化合物名 ${i+1}</label><input data-used-name="${c.id}" value="${esc(c.name)}" placeholder="例：酢酸エチル、炭酸カリウム"></div>
+    <div class="field"><label>CAS番号 ${i+1}</label><input data-used-cas="${c.id}" value="${esc(c.cas)}" placeholder="例：141-78-6"></div>
+    <button type="button" class="danger" data-remove-used="${c.id}">削除</button>
+  </div>`).join("");
+  host.querySelectorAll("[data-used-name]").forEach(el=>el.addEventListener("input",()=>{
+    const c=usedCompoundRowsData.find(x=>x.id===Number(el.dataset.usedName));
+    if(c)c.name=el.value;
+    refreshChemicalOptions();
+    renderPreview();
+  }));
+  host.querySelectorAll("[data-used-cas]").forEach(el=>el.addEventListener("input",()=>{
+    const c=usedCompoundRowsData.find(x=>x.id===Number(el.dataset.usedCas));
+    if(c)c.cas=el.value;
+    refreshChemicalOptions();
+    renderPreview();
+  }));
+  host.querySelectorAll("[data-remove-used]").forEach(btn=>btn.addEventListener("click",()=>{
+    const id=Number(btn.dataset.removeUsed);
+    usedCompoundRowsData=usedCompoundRowsData.filter(c=>c.id!==id);
+    steps.forEach(s=>{
+      Object.entries(s.chemicalSelections||{}).forEach(([label,selectedId])=>{
+        if(Number(selectedId)===id){
+          delete s.chemicalSelections[label];
+          delete s.parameters[label];
+          delete s.parameters[`${label}（CAS番号）`];
+        }
+      });
+    });
+    renderUsedCompoundRows();
+    renderSteps();
+    refreshChemicalOptions();
+    renderPreview();
+  }));
+}
+$("addUsedCompound").addEventListener("click",()=>{
+  usedCompoundRowsData.push({id:nextUsedCompoundId++,name:"",cas:""});
+  renderUsedCompoundRows();
+  refreshChemicalOptions();
+});
+
+const compoundRows = {start: 1, target: 1};
+let evidenceRows = [{id: 1, type: "", files: []}];
+let nextEvidenceId = 2;
+
+function renderCompoundRows(which){
+ const host = $(which + "CompoundRows");
+ const previousNames = Array.from(host.querySelectorAll("[data-compound-name]")).map(el=>el.value);
+ const previousIds = Array.from(host.querySelectorAll("[data-compound-identifier]")).map(el=>el.value);
+ host.innerHTML = Array.from({length:compoundRows[which]},(_,i)=>`<div class="compound-row">
+   <div class="field"><label>化合物名 ${i+1}</label><input data-compound-name="${which}" data-index="${i}" placeholder="化合物名 ${i+1}"></div>
+   <div class="field"><label>IDまたはCAS番号 ${i+1}</label><input data-compound-identifier="${which}" data-index="${i}" placeholder="IDまたはCAS番号 ${i+1}"></div>
+ </div>`).join("");
+ host.querySelectorAll("[data-compound-name]").forEach((el,i)=>el.value=previousNames[i]||"");
+ host.querySelectorAll("[data-compound-identifier]").forEach((el,i)=>el.value=previousIds[i]||"");
+}
+function renderEvidence(){
+ $("evidenceList").innerHTML = evidenceRows.map((e,i)=>`<article class="card" data-evidence="${e.id}">
+   <div class="step-head"><div class="grow"><strong>証拠データ ${i+1}</strong></div>${i>0?'<button type="button" class="danger" data-remove-evidence>削除</button>':""}</div>
+   <div class="field"><label>証拠データの種別</label><select data-evidence-type>
+     ${options(["","IR","¹H NMR","¹³C NMR","XRD","MS","TLC","GC","HPLC","LC-MS","NMR（その他）","その他"],e.type)}
+   </select></div>
+   <div class="field"><label>データ添付</label><input type="file" data-evidence-files multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,.txt,.jdx,.mnova,.raw,.spc"><div class="muted" data-file-list>${e.files.length?e.files.map(f=>esc(f.name)).join("、"):"未選択"}</div></div>
+ </article>`).join("");
+ $("evidenceList").querySelectorAll("[data-evidence]").forEach(card=>{
+   const id=Number(card.dataset.evidence), item=evidenceRows.find(x=>x.id===id);
+   card.querySelector("[data-evidence-type]").addEventListener("change",ev=>{item.type=ev.target.value;});
+   card.querySelector("[data-evidence-files]").addEventListener("change",ev=>{
+     item.files=Array.from(ev.target.files).map(f=>({name:f.name,type:f.type||null,size:f.size}));
+     card.querySelector("[data-file-list]").textContent=item.files.length?item.files.map(f=>f.name).join("、"):"未選択";
+   });
+   const remove=card.querySelector("[data-remove-evidence]");
+   if(remove) remove.addEventListener("click",()=>{evidenceRows=evidenceRows.filter(x=>x.id!==id);renderEvidence();});
+ });
+}
+function data(){
+ const val=id=>$(id).value.trim();
+ const compounds=which=>Array.from(document.querySelectorAll(`[data-compound-name="${which}"]`)).map((el,i)=>({
+   name:el.value.trim()||null,
+   identifier:document.querySelectorAll(`[data-compound-identifier="${which}"]`)[i]?.value.trim()||null
+ })).filter(c=>c.name||c.identifier);
+ const schemeFile=$("schemeImage").files[0];
+ return {
+   experiment:{referenceData:val("referenceData"),name:val("expName")||null,researchBackground:val("researchBackground")||null,
+     schemeImage:schemeFile?{name:schemeFile.name,type:schemeFile.type||null,size:schemeFile.size}:null,
+     startCompounds:compounds("start"),
+     targetCompounds:compounds("target"),
+     usedCompounds:usedCompoundRowsData.map(c=>({name:String(c.name||"").trim()||null,casNumber:String(c.cas||"").trim()||null})).filter(c=>c.name||c.casNumber)},
+   resultAnalysis:{failureType:val("failureType")||null,evidenceData:evidenceRows.map(e=>({type:e.type||null,files:e.files}))},
+   steps:steps.map((s,i)=>{
+     const def=definitionByName[s.operationName];
+     const parameters=Object.fromEntries(Object.entries(s.parameters||{}).filter(([k,v])=>v!==""&&v!==null&&v!==undefined));
+     return {
+       sequence:i+1,
+       hierarchy:{large:s.bigCategory,middle:s.middleCategory,small:s.operationName},
+       operationCategory:s.bigCategory,
+       operationMiddleCategory:s.middleCategory,
+       operationName:s.operationName,
+       target:def?.target||s.target||null,
+       parameters,
+       notes:s.note||null
+     };
+   })
+ };
+}
+function renderPreview(){
+ const compoundSummary=which=>Array.from(document.querySelectorAll(`[data-compound-name="${which}"]`)).map((el,i)=>({name:el.value.trim(),id:document.querySelectorAll(`[data-compound-identifier="${which}"]`)[i]?.value.trim()})).filter(c=>c.name||c.id).map((c,i)=>`${esc(c.name||"化合物 "+(i+1))}${c.id?`<br><small>${esc(c.id)}</small>`:""}`).join("<hr>")||"未入力";
+ const start=compoundSummary("start"),end=compoundSummary("target");
+ const mode=$("viewMode").value;
+ $("flowView").classList.toggle("hidden",mode==="table");
+ $("tableView").classList.toggle("hidden",mode==="flow");
+ $("flowView").innerHTML=`<div class="flowbox"><span class="muted">START · 出発物質</span><br><strong>${start}</strong></div>`+
+ steps.map((s,i)=>{
+   const def=definitionByName[s.operationName];
+   const filled=Object.entries(s.parameters||{}).filter(([k,v])=>v!==""&&v!==null&&v!==undefined);
+   const details=filled.map(([k,v])=>`<div><span class="muted">${esc(k)}：</span>${esc(v)}</div>`).join("");
+   return `<div class="arrow">↓</div><div class="flowop"><div class="muted">工程 ${i+1} · ${esc(s.bigCategory)} › ${esc(s.middleCategory)}</div><strong>${esc(s.operationName)}</strong><div>操作対象：${esc(def?.target||s.target||"—")}</div>${details}${s.note?`<p>備考：${esc(s.note)}</p>`:""}</div>`;
+ }).join("")+
+ `<div class="arrow">↓</div><div class="flowbox"><span class="muted">END · 目的化合物</span><br><strong>${end}</strong></div>`;
+ $("tableView").innerHTML=`<table><thead><tr><th>順序</th><th>大分類</th><th>中分類</th><th>小分類・操作</th><th>操作対象</th><th>入力済み詳細</th></tr></thead><tbody>${steps.map((s,i)=>{
+   const def=definitionByName[s.operationName];
+   const details=Object.entries(s.parameters||{}).filter(([k,v])=>v!==""&&v!==null&&v!==undefined).map(([k,v])=>`${esc(k)}：${esc(v)}`).join("<br>")||"—";
+   return `<tr><td>${i+1}</td><td>${esc(s.bigCategory)}</td><td>${esc(s.middleCategory)}</td><td>${esc(s.operationName)}</td><td>${esc(def?.target||s.target||"—")}</td><td>${details}</td></tr>`;
+ }).join("")}</tbody></table>`;
+}
+["expName","researchBackground","failureType"].forEach(id=>$(id).addEventListener("input",renderPreview));
+function refreshCompoundListeners(){
+ document.querySelectorAll("[data-compound-name],[data-compound-identifier]").forEach(el=>el.addEventListener("input",renderPreview));
+}
+$("addStartIdentifier").addEventListener("click",()=>{compoundRows.start++;renderCompoundRows("start");refreshCompoundListeners();renderPreview();});
+$("addTargetIdentifier").addEventListener("click",()=>{compoundRows.target++;renderCompoundRows("target");refreshCompoundListeners();renderPreview();});
+$("addEvidence").addEventListener("click",()=>{evidenceRows.push({id:nextEvidenceId++,type:"",files:[]});renderEvidence();});
+$("schemeImage").addEventListener("change",()=>{
+ const f=$("schemeImage").files[0], host=$("schemeImagePreview");
+ if(!f){host.textContent="未選択";return;}
+ host.innerHTML=`<div>${esc(f.name)}（${Math.round(f.size/1024)} KB）</div>`;
+ if(f.type.startsWith("image/")){const img=document.createElement("img");img.alt="スキーム画像プレビュー";img.style.maxWidth="100%";img.style.maxHeight="260px";img.style.marginTop="8px";img.src=URL.createObjectURL(f);host.appendChild(img);}
+});
+$("referenceData").addEventListener("change",()=>{
+ const v=$("referenceData").value;
+ const templates={
+  "鈴木宮浦・ブロモフェノール":{background:"参照ひな形：鈴木–宮浦カップリング（ブロモフェノール系）。詳細は実験条件に合わせて入力してください。",start:"ブロモフェノール"},
+  "鈴木宮浦・ブロモアニリン":{background:"参照ひな形：鈴木–宮浦カップリング（ブロモアニリン系）。詳細は実験条件に合わせて入力してください。",start:"ブロモアニリン"},
+  "鈴木宮浦・クロロベンゼン":{background:"参照ひな形：鈴木–宮浦カップリング（クロロベンゼン系）。詳細は実験条件に合わせて入力してください。",start:"クロロベンゼン"}
+ };
+ if(v!=="-" && templates[v]){
+   $("researchBackground").value=templates[v].background;
+   const firstName=document.querySelector('[data-compound-name="start"]');
+   if(firstName) firstName.value=templates[v].start;
+   renderPreview();
+ }
+});
+$("addStep").addEventListener("click",()=>{steps.push(newStep(nextId++));renderSteps();renderPreview();document.querySelector(`[data-step="${steps[steps.length-1].id}"]`).scrollIntoView({behavior:"smooth",block:"start"})});
+$("viewMode").addEventListener("change",renderPreview);
+$("copyJson").addEventListener("click",async()=>{const txt=JSON.stringify(data(),null,2);try{await navigator.clipboard.writeText(txt);$("copyStatus").textContent="JSONをクリップボードにコピーしました。"}catch(e){$("jsonOutput").textContent=txt;$("jsonOutput").classList.remove("hidden");$("copyStatus").textContent="自動コピーできないため、表示されたJSONを手動でコピーしてください。"}});
+$("downloadJson").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(data(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="organic-synthesis-test.json";a.click();URL.revokeObjectURL(a.href);$("copyStatus").textContent="JSONファイルをダウンロードしました。"});
+$("showJson").addEventListener("click",()=>{$("jsonOutput").textContent=JSON.stringify(data(),null,2);$("jsonOutput").classList.toggle("hidden")});
+renderCompoundRows("start");renderCompoundRows("target");renderUsedCompoundRows();renderEvidence();refreshCompoundListeners();renderSteps();refreshChemicalOptions();renderPreview();
+</script>
+</body>
+</html>
